@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace JWTAuthentication.Controllers
 {
@@ -19,6 +20,8 @@ namespace JWTAuthentication.Controllers
     public class LoginController : ControllerBase
     {
         private IConfiguration _config;
+
+        private readonly JWTAuthenticationContext _context;
 
         public LoginController(IConfiguration config)
         {
@@ -45,12 +48,35 @@ namespace JWTAuthentication.Controllers
         private UserModel AuthenticateUser(UserModel login)
         {
             UserModel user = null;
+
+            Task<ActionResult<bool>> isValid = DataAuthenticator(login);
+
+            /*
             //using static User Info for test
-            if(login.UserName == "Christopher" && login.Password == "Zoidberg")
+            if (login.UserName == "TheOriginalChris1" && login.Password == "Password123")
             {
-                user = new UserModel { UserName = "Christopher", EmailAddress = "Theoriginalchris1@gmail.com", Password = "Zoidberg" };
+                user = new UserModel { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
+            }
+            */
+            if (isValid != null)
+            {
+                user = new UserModel { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
             }
             return user;
+        }
+
+        private async Task<ActionResult<bool>> DataAuthenticator(UserModel login)
+        {
+            UserModel data = await _context.UserModels.Where<UserModel>(UserModel => UserModel.UserName == login.UserName && UserModel.Password == login.Password).FirstOrDefaultAsync<UserModel>();
+
+            if (data != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private string GenerateJSONWebToken(UserModel userInfo)

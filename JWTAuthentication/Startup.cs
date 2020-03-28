@@ -12,7 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using JWTAuthentication.Model;
 
 namespace JWTAuthentication
 {
@@ -33,6 +35,10 @@ namespace JWTAuthentication
                 options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials().Build());
             }
             );
+
+            services.AddDbContext<JWTAuthenticationContext>(opt =>
+               opt.UseNpgsql(Configuration.GetConnectionString("PostgresDBConnection")));
+
             services.AddControllers();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
