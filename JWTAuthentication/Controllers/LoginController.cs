@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JWTAuthentication.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Users")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -102,13 +102,16 @@ namespace JWTAuthentication.Controllers
             return encodetoken;
         }
 
-        [Authorize]
-        [HttpPost("Post")]
+        //[Authorize]
+        [HttpPost]
         public string Post()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             IList<Claim> claim = identity.Claims.ToList();
             var userName = claim[0].Value;
+            var password = claim[1].Value;
+            Console.WriteLine(claim[0].Value);
+            Console.WriteLine(claim[1].Value);
             return "Welcome To: " + userName;
         }
 
@@ -118,7 +121,5 @@ namespace JWTAuthentication.Controllers
         {
             return new string[] { "Value1", "Value2", "Value3" };
         }
-
-
     }
 }
