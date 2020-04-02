@@ -28,6 +28,7 @@ namespace JWTAuthentication.Controllers
             _config = config;
         }
 
+        /*
         public IActionResult Login(string username, string pass)
         {
             UserModel login = new UserModel();
@@ -45,6 +46,8 @@ namespace JWTAuthentication.Controllers
 
             return response;
         }
+        */
+
         private UserModel AuthenticateUser(UserModel login)
         {
             UserModel user = null;
@@ -102,6 +105,21 @@ namespace JWTAuthentication.Controllers
             return encodetoken;
         }
 
+        [HttpPost]
+        public async Task<ActionResult<UserModel>> PostUserModel(UserModel userModel)
+        {
+            Console.WriteLine(userModel);
+
+
+            _context.UserModels.Add(userModel);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetPostItem", new { UserModel = userModel.UserName }, userModel);
+        }
+
+
+
+        /*
         //[Authorize]
         [HttpPost]
         public string Post()
@@ -114,6 +132,7 @@ namespace JWTAuthentication.Controllers
             Console.WriteLine(claim[1].Value);
             return "Welcome To: " + userName;
         }
+        */
 
         [Authorize]
         [HttpGet("GetValue")]
