@@ -15,17 +15,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JWTAuthentication.Controllers
 {
-    [Route("api/Users")]
+    [Route("api/Registration")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class RegistrationController : ControllerBase
     {
         private IConfiguration _config;
 
         private readonly JWTAuthenticationContext _context;
 
-        public LoginController(IConfiguration config)
+        public  RegistrationController(IConfiguration config, JWTAuthenticationContext context)
         {
             _config = config;
+            _context = context;
         }
 
         /*
@@ -48,7 +49,7 @@ namespace JWTAuthentication.Controllers
         }
         */
 
-            /*
+        /*
         private UserModel AuthenticateUser(UserModel login)
         {
             UserModel user = null;
@@ -68,6 +69,10 @@ namespace JWTAuthentication.Controllers
             }
             return user;
         }
+        */
+
+
+        /*
 
         private async Task<ActionResult<bool>> DataAuthenticator(UserModel login)
         {
@@ -106,19 +111,16 @@ namespace JWTAuthentication.Controllers
             return encodetoken;
         }
 
+            */
+
         [HttpPost]
-        public async Task<ActionResult<UserModel>> PostUserModel(UserModel userModel)
+        public async Task<ActionResult<UserModelRegistration>> PostUserModelRegistration(UserModelRegistration userModelRegistration)
         {
-            Console.WriteLine(userModel);
-
-
-            _context.UserModels.Add(userModel);
+            _context.UserModelRegistrations.Add(userModelRegistration);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPostItem", new { UserModel = userModel.UserName }, userModel);
+            return CreatedAtAction("GetUserModelRegistration", new { id = userModelRegistration.UserId }, userModelRegistration);
         }
-
-
 
         /*
         //[Authorize]

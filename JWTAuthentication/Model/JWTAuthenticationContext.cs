@@ -13,7 +13,9 @@ namespace JWTAuthentication.Model
 
         }
 
-        public DbSet<UserModel> UserModels { get; set; }
+        public DbSet<UserModelLogin> UserModelLogins { get; set; }
+
+        public DbSet<UserModelRegistration> UserModelRegistrations { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql("Host=127.0.0.1;Database=GP2_DB;Username=postgres;Password=Squeakzilla1;");
     }
