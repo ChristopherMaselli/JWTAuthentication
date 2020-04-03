@@ -116,11 +116,56 @@ namespace JWTAuthentication.Controllers
         [HttpPost]
         public async Task<ActionResult<UserModelRegistration>> PostUserModelRegistration(UserModelRegistration userModelRegistration)
         {
-            _context.UserModelRegistrations.Add(userModelRegistration);
-            await _context.SaveChangesAsync();
+            Task<ActionResult<bool>> isEmailValid = EmailDataAuthenticator(userModelRegistration);
+            if (isEmailValid.Result.Value == false)
+            {
+                //Error
+                Console.WriteLine("Email is taken");
+                return NotFound();
+            }
 
+            Task<ActionResult<bool>> isUsernameValid = UsernameDataAuthenticator(userModelRegistration);
+            if (isUsernameValid.Result.Value == false)
+            {
+                //Error
+                Console.WriteLine("Username is taken");
+                return NotFound();
+            }
+      
+
+            _context.UserModelRegistrations.Add(userModelRegistration);
+
+            await _context.SaveChangesAsync();
             return CreatedAtAction("GetUserModelRegistration", new { id = userModelRegistration.UserId }, userModelRegistration);
         }
+
+        private async Task<ActionResult<bool>> UsernameDataAuthenticator(UserModelRegistration registration)
+        {
+            UserModelRegistration data = await _context.UserModelRegistrations.Where<UserModelRegistration>(UserModelRegistration => UserModelRegistration.UserName == registration.UserName).FirstOrDefaultAsync<UserModelRegistration>();
+            if (data != null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private async Task<ActionResult<bool>> EmailDataAuthenticator(UserModelRegistration registration)
+        {
+            UserModelRegistration data = await _context.UserModelRegistrations.Where<UserModelRegistration>(UserModelRegistration => UserModelRegistration.EmailAddress == registration.EmailAddress).FirstOrDefaultAsync<UserModelRegistration>();
+            if (data != null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
 
         /*
         //[Authorize]
