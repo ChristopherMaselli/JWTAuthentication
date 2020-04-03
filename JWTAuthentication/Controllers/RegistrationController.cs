@@ -32,7 +32,7 @@ namespace JWTAuthentication.Controllers
         /*
         public IActionResult Login(string username, string pass)
         {
-            UserModel login = new UserModel();
+            UserAccount login = new UserModel();
             login.UserName = username;
             login.Password = pass;
             IActionResult response = Unauthorized();
@@ -114,34 +114,34 @@ namespace JWTAuthentication.Controllers
             */
 
         [HttpPost]
-        public async Task<ActionResult<UserModelRegistration>> PostUserModelRegistration(UserModelRegistration userModelRegistration)
+        public async Task PostUserAccountRegistration(UserAccount userAccount)
         {
-            Task<ActionResult<bool>> isEmailValid = EmailDataAuthenticator(userModelRegistration);
+            Task<ActionResult<bool>> isEmailValid = EmailDataAuthenticator(userAccount);
             if (isEmailValid.Result.Value == false)
             {
                 //Error
                 Console.WriteLine("Email is taken");
-                return NotFound();
+                return;
             }
 
-            Task<ActionResult<bool>> isUsernameValid = UsernameDataAuthenticator(userModelRegistration);
+            Task<ActionResult<bool>> isUsernameValid = UsernameDataAuthenticator(userAccount);
             if (isUsernameValid.Result.Value == false)
             {
                 //Error
                 Console.WriteLine("Username is taken");
-                return NotFound();
+                return;
             }
       
-
-            _context.UserModelRegistrations.Add(userModelRegistration);
+            _context.UserAccounts.Add(userAccount);
 
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetUserModelRegistration", new { id = userModelRegistration.UserId }, userModelRegistration);
+            //return CreatedAtAction("GetUserAccountRegistration", new { id = userAccountRegistration.UserId }, userAccountRegistration);
+            return;
         }
 
-        private async Task<ActionResult<bool>> UsernameDataAuthenticator(UserModelRegistration registration)
+        private async Task<ActionResult<bool>> UsernameDataAuthenticator(UserAccount registration)
         {
-            UserModelRegistration data = await _context.UserModelRegistrations.Where<UserModelRegistration>(UserModelRegistration => UserModelRegistration.UserName == registration.UserName).FirstOrDefaultAsync<UserModelRegistration>();
+            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == registration.UserName).FirstOrDefaultAsync<UserAccount>();
             if (data != null)
             {
                 return false;
@@ -152,9 +152,9 @@ namespace JWTAuthentication.Controllers
             }
         }
 
-        private async Task<ActionResult<bool>> EmailDataAuthenticator(UserModelRegistration registration)
+        private async Task<ActionResult<bool>> EmailDataAuthenticator(UserAccount registration)
         {
-            UserModelRegistration data = await _context.UserModelRegistrations.Where<UserModelRegistration>(UserModelRegistration => UserModelRegistration.EmailAddress == registration.EmailAddress).FirstOrDefaultAsync<UserModelRegistration>();
+            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.EmailAddress == registration.EmailAddress).FirstOrDefaultAsync<UserAccount>();
             if (data != null)
             {
                 return false;

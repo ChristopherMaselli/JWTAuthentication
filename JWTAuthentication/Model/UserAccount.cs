@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JWTAuthentication.Model
 {
-    public class UserModelRegistration
+    public class UserAccount
     {
         [Key]
         public int UserId { get; set; }

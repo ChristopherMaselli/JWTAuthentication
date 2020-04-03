@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JWTAuthentication.Controllers
 {
-    [Route("api/Users")]
+    [Route("api/Login")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -23,15 +23,15 @@ namespace JWTAuthentication.Controllers
 
         private readonly JWTAuthenticationContext _context;
 
-        public LoginController(IConfiguration config)
+        public LoginController(IConfiguration config, JWTAuthenticationContext context)
         {
             _config = config;
+            _context = context;
         }
 
-        /*
         public IActionResult Login(string username, string pass)
         {
-            UserModel login = new UserModel();
+            UserAccount login = new UserAccount();
             login.UserName = username;
             login.Password = pass;
             IActionResult response = Unauthorized();
@@ -46,12 +46,10 @@ namespace JWTAuthentication.Controllers
 
             return response;
         }
-        */
 
-            /*
-        private UserModel AuthenticateUser(UserModel login)
+        private UserAccount AuthenticateUser(UserAccount login)
         {
-            UserModel user = null;
+            UserAccount user = null;
 
             Task<ActionResult<bool>> isValid = DataAuthenticator(login);
 
@@ -59,19 +57,19 @@ namespace JWTAuthentication.Controllers
             //using static User Info for test
             if (login.UserName == "TheOriginalChris1" && login.Password == "Password123")
             {
-                user = new UserModel { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
+                user = new UserAccount { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
             }
             
             if (isValid != null)
             {
-                user = new UserModel { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
+                user = new UserAccount { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
             }
             return user;
         }
 
-        private async Task<ActionResult<bool>> DataAuthenticator(UserModel login)
+        private async Task<ActionResult<bool>> DataAuthenticator(UserAccount login)
         {
-            UserModel data = await _context.UserModels.Where<UserModel>(UserModel => UserModel.UserName == login.UserName && UserModel.Password == login.Password).FirstOrDefaultAsync<UserModel>();
+            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserModel => UserModel.UserName == login.UserName && UserModel.Password == login.Password).FirstOrDefaultAsync<UserAccount>();
 
             if (data != null)
             {
@@ -83,7 +81,7 @@ namespace JWTAuthentication.Controllers
             }
         }
 
-        private string GenerateJSONWebToken(UserModel userInfo)
+        private string GenerateJSONWebToken(UserAccount userInfo)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -106,21 +104,6 @@ namespace JWTAuthentication.Controllers
             return encodetoken;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<UserModel>> PostUserModel(UserModel userModel)
-        {
-            Console.WriteLine(userModel);
-
-
-            _context.UserModels.Add(userModel);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPostItem", new { UserModel = userModel.UserName }, userModel);
-        }
-
-
-
-        /*
         //[Authorize]
         [HttpPost]
         public string Post()
@@ -133,7 +116,6 @@ namespace JWTAuthentication.Controllers
             Console.WriteLine(claim[1].Value);
             return "Welcome To: " + userName;
         }
-        */
 
         [Authorize]
         [HttpGet("GetValue")]
