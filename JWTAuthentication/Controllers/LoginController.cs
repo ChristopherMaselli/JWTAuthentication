@@ -29,11 +29,23 @@ namespace JWTAuthentication.Controllers
             _context = context;
         }
 
-        public IActionResult Login(string username, string pass)
+        [HttpPost]
+        public async Task PostUserAccountLogin(UserAccount userAccount)
+        {
+            Login(userAccount.UserName, userAccount.Password);
+
+            //await _context.SaveChangesAsync();
+            //return CreatedAtAction("GetUserAccountRegistration", new { id = userAccountRegistration.UserId }, userAccountRegistration);
+            return;
+        }
+
+
+
+        public IActionResult Login(string username, string password)
         {
             UserAccount login = new UserAccount();
             login.UserName = username;
-            login.Password = pass;
+            login.Password = password;
             IActionResult response = Unauthorized();
 
             var user = AuthenticateUser(login);
@@ -43,7 +55,6 @@ namespace JWTAuthentication.Controllers
                 var tokenStr = GenerateJSONWebToken(user);
                 response = Ok(new { token = tokenStr });
             }
-
             return response;
         }
 
@@ -55,21 +66,16 @@ namespace JWTAuthentication.Controllers
 
             
             //using static User Info for test
-            if (login.UserName == "TheOriginalChris1" && login.Password == "Password123")
+            if (isValid.Result.Value == true)
             {
-                user = new UserAccount { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
-            }
-            
-            if (isValid != null)
-            {
-                user = new UserAccount { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
+                user = new UserAccount { UserName = login.UserName, Password = login.Password };
             }
             return user;
         }
 
         private async Task<ActionResult<bool>> DataAuthenticator(UserAccount login)
         {
-            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserModel => UserModel.UserName == login.UserName && UserModel.Password == login.Password).FirstOrDefaultAsync<UserAccount>();
+            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == login.UserName && UserAccount.Password == login.Password).FirstOrDefaultAsync<UserAccount>();
 
             if (data != null)
             {
@@ -89,7 +95,7 @@ namespace JWTAuthentication.Controllers
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, userInfo.EmailAddress),
+                new Claim(JwtRegisteredClaimNames.Prn, userInfo.Password),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -104,6 +110,7 @@ namespace JWTAuthentication.Controllers
             return encodetoken;
         }
 
+        /*
         //[Authorize]
         [HttpPost]
         public string Post()
@@ -116,6 +123,7 @@ namespace JWTAuthentication.Controllers
             Console.WriteLine(claim[1].Value);
             return "Welcome To: " + userName;
         }
+        */
 
         [Authorize]
         [HttpGet("GetValue")]
