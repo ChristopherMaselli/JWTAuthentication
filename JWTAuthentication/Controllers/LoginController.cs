@@ -30,13 +30,11 @@ namespace JWTAuthentication.Controllers
         }
 
         [HttpPost]
-        public async Task PostUserAccountLogin(UserAccount userAccount)
+        public async Task<IActionResult> PostUserAccountLogin(UserAccount userAccount)
         {
-            Login(userAccount.UserName, userAccount.Password);
-
             //await _context.SaveChangesAsync();
             //return CreatedAtAction("GetUserAccountRegistration", new { id = userAccountRegistration.UserId }, userAccountRegistration);
-            return;
+            return Login(userAccount.UserName, userAccount.Password);
         }
 
 
@@ -89,12 +87,12 @@ namespace JWTAuthentication.Controllers
 
         private string GenerateJSONWebToken(UserAccount userInfo)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"])); //----------------------
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName), //-----------------------------
                 new Claim(JwtRegisteredClaimNames.Prn, userInfo.Password),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
