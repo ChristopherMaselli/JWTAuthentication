@@ -131,8 +131,15 @@ namespace JWTAuthentication.Controllers
                 Console.WriteLine("Username is taken");
                 return;
             }
-      
-            _context.UserAccounts.Add(userAccount);
+
+            var pass = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
+
+            UserAccount regiUser = new UserAccount();
+            regiUser.UserName = userAccount.UserName;
+            regiUser.Password = pass;
+            regiUser.EmailAddress = userAccount.EmailAddress;
+
+            _context.UserAccounts.Add(regiUser);
 
             await _context.SaveChangesAsync();
             //return CreatedAtAction("GetUserAccountRegistration", new { id = userAccountRegistration.UserId }, userAccountRegistration);

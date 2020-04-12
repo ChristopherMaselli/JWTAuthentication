@@ -37,10 +37,17 @@ namespace JWTAuthentication.Controllers
             return Login(userAccount.UserName, userAccount.Password);
         }
 
-
+        /*
+        [HttpPost("/Token")]
+        public IActionResult TokenAuth(string token)
+        {
+            return;
+        }
+        */
 
         public IActionResult Login(string username, string password)
         {
+            //var pass = BCrypt.Net.BCrypt.HashPassword(password);
             UserAccount login = new UserAccount();
             login.UserName = username;
             login.Password = password;
@@ -48,7 +55,7 @@ namespace JWTAuthentication.Controllers
 
             var user = AuthenticateUser(login);
 
-            if(user != null)
+            if (user != null)
             {
                 var tokenStr = GenerateJSONWebToken(user);
                 response = Ok(new { token = tokenStr });
@@ -69,10 +76,16 @@ namespace JWTAuthentication.Controllers
                 user = new UserAccount { UserName = login.UserName, Password = login.Password };
             }
             return user;
-        }
+        }   
 
         private async Task<ActionResult<bool>> DataAuthenticator(UserAccount login)
         {
+            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == login.UserName).FirstOrDefaultAsync<UserAccount>();
+
+            return BCrypt.Net.BCrypt.Verify(login.Password, data.Password);
+
+            /*
+
             UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == login.UserName && UserAccount.Password == login.Password).FirstOrDefaultAsync<UserAccount>();
 
             if (data != null)
@@ -83,6 +96,7 @@ namespace JWTAuthentication.Controllers
             {
                 return false;
             }
+            */
         }
 
         private string GenerateJSONWebToken(UserAccount userInfo)
