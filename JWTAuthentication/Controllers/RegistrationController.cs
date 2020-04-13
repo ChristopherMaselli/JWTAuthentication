@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
 
 namespace JWTAuthentication.Controllers
 {
@@ -29,107 +30,20 @@ namespace JWTAuthentication.Controllers
             _context = context;
         }
 
-        /*
-        public IActionResult Login(string username, string pass)
-        {
-            UserAccount login = new UserModel();
-            login.UserName = username;
-            login.Password = pass;
-            IActionResult response = Unauthorized();
-
-            var user = AuthenticateUser(login);
-
-            if(user != null)
-            {
-                var tokenStr = GenerateJSONWebToken(user);
-                response = Ok(new { token = tokenStr });
-            }
-
-            return response;
-        }
-        */
-
-        /*
-        private UserModel AuthenticateUser(UserModel login)
-        {
-            UserModel user = null;
-
-            Task<ActionResult<bool>> isValid = DataAuthenticator(login);
-
-            
-            //using static User Info for test
-            if (login.UserName == "TheOriginalChris1" && login.Password == "Password123")
-            {
-                user = new UserModel { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
-            }
-            
-            if (isValid != null)
-            {
-                user = new UserModel { UserName = login.UserName, EmailAddress = login.EmailAddress, Password = login.Password };
-            }
-            return user;
-        }
-        */
-
-
-        /*
-
-        private async Task<ActionResult<bool>> DataAuthenticator(UserModel login)
-        {
-            UserModel data = await _context.UserModels.Where<UserModel>(UserModel => UserModel.UserName == login.UserName && UserModel.Password == login.Password).FirstOrDefaultAsync<UserModel>();
-
-            if (data != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private string GenerateJSONWebToken(UserModel userInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, userInfo.EmailAddress),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            var encodetoken = new JwtSecurityTokenHandler().WriteToken(token);
-            return encodetoken;
-        }
-
-            */
-
         [HttpPost]
-        public async Task PostUserAccountRegistration(UserAccount userAccount)
+        public async Task<string> PostUserAccountRegistration(UserAccount userAccount)
         {
+            HttpResponse response = HttpContext.Response;
             Task<ActionResult<bool>> isEmailValid = EmailDataAuthenticator(userAccount);
             if (isEmailValid.Result.Value == false)
             {
-                //Error
-                Console.WriteLine("Email is taken");
-                return;
+                return "Email is Taken";
             }
 
             Task<ActionResult<bool>> isUsernameValid = UsernameDataAuthenticator(userAccount);
             if (isUsernameValid.Result.Value == false)
             {
-                //Error
-                Console.WriteLine("Username is taken");
-                return;
+                return "Username is Taken";
             }
 
             var pass = BCrypt.Net.BCrypt.HashPassword(userAccount.Password);
@@ -143,7 +57,8 @@ namespace JWTAuthentication.Controllers
 
             await _context.SaveChangesAsync();
             //return CreatedAtAction("GetUserAccountRegistration", new { id = userAccountRegistration.UserId }, userAccountRegistration);
-            return;
+
+            return "Registration Complete! Welcome" + regiUser.UserName + "";
         }
 
         private async Task<ActionResult<bool>> UsernameDataAuthenticator(UserAccount registration)
