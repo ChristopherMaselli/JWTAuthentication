@@ -122,20 +122,22 @@ namespace JWTAuthentication.Controllers
             return encodetoken;
         }
 
-        /*
+
+
         //[Authorize]
-        [HttpPost]
-        public string Post()
+        [HttpPost("/Token")]
+        public IActionResult DecodeToken(UserAccount userAccount)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            IList<Claim> claim = identity.Claims.ToList();
+            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken("Hi");
+            //var identity = HttpContext.User.Identity as ClaimsIdentity;
+            IList<Claim> claim = decodeToken.Claims.ToList();
             var userName = claim[0].Value;
             var password = claim[1].Value;
             Console.WriteLine(claim[0].Value);
             Console.WriteLine(claim[1].Value);
-            return "Welcome To: " + userName;
+            IActionResult response = Unauthorized();
+            return Login("username", "password");
         }
-        */
 
         [Authorize]
         [HttpGet("GetValue")]
