@@ -123,21 +123,54 @@ namespace JWTAuthentication.Controllers
         }
 
 
+        /*
+        //[Authorize]
+        [HttpPost("Welcome")]
+        public async Task<UserAccount> DecodeToken(Token token)
+        {
+            if (token == null)
+            {
+                return null;
+            }
+            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token.token);
+            //var identity = HttpContext.User.Identity as ClaimsIdentity;
+            IList<Claim> claim = decodeToken.Claims.ToList();
+            var userName = claim[0].Value;
+            var password = claim[1].Value;
+            UserAccount user = new UserAccount();
+            user.UserName = userName;
+            user.Password = password;
+
+            var verified = DataAuthenticator(user);
+            if (verified.Result.Value == true)
+            {
+                return user;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        */
 
         //[Authorize]
-        [HttpPost("/Token")]
-        public IActionResult DecodeToken(UserAccount userAccount)
+        [HttpPost("Token")]
+        public async Task<IActionResult> AuthorizeToken(Token token)
         {
-            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken("Hi");
+            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token.token);
             //var identity = HttpContext.User.Identity as ClaimsIdentity;
             IList<Claim> claim = decodeToken.Claims.ToList();
             var userName = claim[0].Value;
             var password = claim[1].Value;
             Console.WriteLine(claim[0].Value);
             Console.WriteLine(claim[1].Value);
-            IActionResult response = Unauthorized();
-            return Login("username", "password");
+            //Get the details of the user from the server:
+            //Send into an authenticator to verify password against BCrypt
+            //Get the details needed
+            //Send back the UserAccount with the proper details. 
+            return Ok;
         }
+
 
         [Authorize]
         [HttpGet("GetValue")]

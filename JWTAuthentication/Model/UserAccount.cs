@@ -16,4 +16,9 @@ namespace JWTAuthentication.Model
 
         public string EmailAddress { get; set; }
     }
+    public class Token
+    {
+        [Key]
+        public string token { get; set; }
+    }
 }
