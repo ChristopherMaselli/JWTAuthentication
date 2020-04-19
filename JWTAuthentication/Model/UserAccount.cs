@@ -26,8 +26,6 @@ namespace JWTAuthentication.Model
     {
         [Key]
         public int UserId { get; set; }
-
-        public string UserName { get; set;}
         public string MemberSince { get; set; }
 
         public string HoursPlayed { get; set; }
