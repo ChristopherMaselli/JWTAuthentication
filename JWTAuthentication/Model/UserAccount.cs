@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JWTAuthentication.Model
 {
     public class UserAccount
     {
         [Key]
-        public int UserId { get; set; }
+        public long Id { get; set; }
         public string UserName { get; set; }
 
         public string Password { get; set; }
@@ -25,7 +26,11 @@ namespace JWTAuthentication.Model
     public class UserData
     {
         [Key]
-        public int UserId { get; set; }
+        [ForeignKey("UserDataId")]
+        public UserAccount UserAccount { get; set; }
+
+        //[ForeignKey("user_account_id")]
+
         public string MemberSince { get; set; }
 
         public string HoursPlayed { get; set; }
@@ -36,11 +41,11 @@ namespace JWTAuthentication.Model
     public class Game
     {
         [Key]
-        public string GameId { get; set; }
+        public long GameId { get; set; }
 
         public string GameName { get; set; }
-
-        public string Owner { get; set; }
+        [ForeignKey("OwnerId")]
+        public UserAccount UserAccount { get; set; }
 
         public int DateCreated { get; set; }
 
@@ -50,9 +55,12 @@ namespace JWTAuthentication.Model
     public class PlayerToGame
     {
         [Key]
-        public int id { get; set; }
-        public string GameId { get; set; }
+        public long id { get; set; }
 
-        public string UserId { get; set; }
+        [ForeignKey("GameId")]
+        public Game Game { get; set; }
+
+        [ForeignKey("UserId")]
+        public UserAccount UserAccount { get; set; }
     }
 }

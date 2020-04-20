@@ -15,6 +15,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JWTAuthentication.Controllers
 {
+
+    /*
+    [Holder Class Example]
+    public class UserAccData
+    {
+        public UserAccount ua;
+        public UserData ud;
+
+        public userAccData(UserAccount uaa, UserData udd)
+        {
+            ua = uaa;
+            ud = udd;
+        }
+    }
+    */
+
     [Route("api/Data")]
     [ApiController]
     public class PageDataController : ControllerBase
@@ -30,7 +46,7 @@ namespace JWTAuthentication.Controllers
         }
 
         [HttpPost("UserProfile")]
-        public async Task<IActionResult> UserProfileDetails(Token token)
+        public async Task<IActionResult<UserData>> UserProfileDetails(Token token)
         {
             var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token.token);
             //var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -39,7 +55,17 @@ namespace JWTAuthentication.Controllers
             var password = claim[1].Value;
             UserAccount accountData = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
             UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == accountData.UserId).FirstOrDefaultAsync<UserData>();
-            //Create a JSON object with the details. 
+
+            /*UserAccData uad = new UserAccData(accountData, userData);*/
+
+
+
+            return userData;
+
+
+            
+
+
             return null;
         }
 
@@ -174,7 +200,7 @@ namespace JWTAuthentication.Controllers
             //Send into an authenticator to verify password against BCrypt
             //Get the details needed
             //Send back the UserAccount with the proper details. 
-            return Ok;
+            return null;
         }
 
 

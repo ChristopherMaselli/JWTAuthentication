@@ -168,7 +168,7 @@ namespace JWTAuthentication.Controllers
             //Send into an authenticator to verify password against BCrypt
             //Get the details needed
             //Send back the UserAccount with the proper details. 
-            return Ok;
+            return null;
         }
 
 
