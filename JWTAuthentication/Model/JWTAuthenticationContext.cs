@@ -16,7 +16,7 @@ namespace JWTAuthentication.Model
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<Token> Tokens { get; set; }
 
-        public DbSet<UserData> UserDatas { get; set; }
+        public DbSet<UserProfilePageData> UserProfilePageDatas { get; set; }
 
         public DbSet<Game> Games { get; set; }
 

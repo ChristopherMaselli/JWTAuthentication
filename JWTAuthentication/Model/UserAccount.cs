@@ -23,9 +23,10 @@ namespace JWTAuthentication.Model
         public string token { get; set; }
     }
 
-    public class UserData
+    public class UserProfilePageData
     {
         [Key]
+        public long UserDataId { get; set; }
         [ForeignKey("UserDataId")]
         public UserAccount UserAccount { get; set; }
 
@@ -44,6 +45,7 @@ namespace JWTAuthentication.Model
         public long GameId { get; set; }
 
         public string GameName { get; set; }
+        public long OwnerId { get; set; }
         [ForeignKey("OwnerId")]
         public UserAccount UserAccount { get; set; }
 
@@ -57,9 +59,11 @@ namespace JWTAuthentication.Model
         [Key]
         public long id { get; set; }
 
+        public long GameId { get; set; }
         [ForeignKey("GameId")]
         public Game Game { get; set; }
 
+        public long UserId { get; set; }
         [ForeignKey("UserId")]
         public UserAccount UserAccount { get; set; }
     }

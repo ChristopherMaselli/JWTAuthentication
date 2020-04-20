@@ -46,27 +46,17 @@ namespace JWTAuthentication.Controllers
         }
 
         [HttpPost("UserProfile")]
-        public async Task<IActionResult<UserData>> UserProfileDetails(Token token)
+        public async Task<UserProfilePageData> UserProfileDetails(Token token)
         {
             var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token.token);
             //var identity = HttpContext.User.Identity as ClaimsIdentity;
             IList<Claim> claim = decodeToken.Claims.ToList();
             var userName = claim[0].Value;
             var password = claim[1].Value;
-            UserAccount accountData = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
-            UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == accountData.UserId).FirstOrDefaultAsync<UserData>();
+            UserProfilePageData userProfilePageData = await _context.UserProfilePageDatas.Where<UserProfilePageData>(UserProfilePageData => UserProfilePageData.UserAccount.UserName == userName).FirstOrDefaultAsync<UserProfilePageData>();
 
             /*UserAccData uad = new UserAccData(accountData, userData);*/
-
-
-
-            return userData;
-
-
-            
-
-
-            return null;
+            return userProfilePageData;
         }
 
         /*
