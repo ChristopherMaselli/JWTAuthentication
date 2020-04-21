@@ -23,12 +23,12 @@ namespace JWTAuthentication.Model
         public string token { get; set; }
     }
 
-    public class UserProfilePageData
+    public class UserData
     {
         [Key]
-        public long UserDataId { get; set; }
-        [ForeignKey("UserDataId")]
-        public UserAccount UserAccount { get; set; }
+        public long UserId { get; set; }
+        [ForeignKey("UserId")]
+        public UserAccount UserAccountId { get; set; }
 
         //[ForeignKey("user_account_id")]
 
