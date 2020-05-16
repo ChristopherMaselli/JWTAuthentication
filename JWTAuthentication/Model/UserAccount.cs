@@ -23,6 +23,7 @@ namespace JWTAuthentication.Model
         public string token { get; set; }
     }
 
+    [Serializable]
     public class UserData
     {
         [Key]

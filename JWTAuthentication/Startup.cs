@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using JWTAuthentication.Model;
+using Newtonsoft;
 
 namespace JWTAuthentication
 {
@@ -56,6 +57,8 @@ namespace JWTAuthentication
                opt.UseNpgsql(Configuration.GetConnectionString("PostgresDBConnection")));
 
             services.AddControllers();
+                //.AddNewtonsoftJson(json => json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
