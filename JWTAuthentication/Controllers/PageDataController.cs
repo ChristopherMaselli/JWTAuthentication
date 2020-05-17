@@ -63,6 +63,6 @@ namespace JWTAuthentication.Controllers
                 emailAddress = _emailAddress;
                 userData = _userData;
             }
-        }
     }
+        }
 }

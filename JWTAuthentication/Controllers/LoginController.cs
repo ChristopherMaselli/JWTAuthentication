@@ -155,7 +155,7 @@ namespace JWTAuthentication.Controllers
 
         //[Authorize]
         [HttpPost("Token")]
-        public async Task<IActionResult> AuthorizeToken(Token token)
+        public async Task<bool> AuthorizeToken(Token token)
         {
             var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token.token);
             //var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -165,10 +165,15 @@ namespace JWTAuthentication.Controllers
             Console.WriteLine(claim[0].Value);
             Console.WriteLine(claim[1].Value);
             //Get the details of the user from the server:
-            //Send into an authenticator to verify password against BCrypt
-            //Get the details needed
-            //Send back the UserAccount with the proper details. 
-            return null;
+            UserAccount userAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName && UserAccount.Password == password).FirstOrDefaultAsync<UserAccount>();
+            if (userAccount.UserName != null && userAccount.Password != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
 
