@@ -83,16 +83,17 @@ namespace JWTAuthentication.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public async Task<IActionResult> AuthorizeToken(string token)
+        public string AuthorizeToken(Token tokenVar)
+        //public async Task<string> AuthorizeToken(string token)
         {
-            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(tokenVar.token);
             IList<Claim> claim = decodeToken.Claims.ToList();
             var userName = claim[0].Value;
             var password = claim[1].Value;
 
             if (UserAccountAuthenticator(userName, password).Result.Value == true)
             {
-                return Ok(new { token = true });
+                return "true";
             }
             return null;
         }
