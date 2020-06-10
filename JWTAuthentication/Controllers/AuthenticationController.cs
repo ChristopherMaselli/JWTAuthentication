@@ -32,7 +32,7 @@ namespace JWTAuthentication.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> PostUserAccountLogin(UserAccount userAccount)
         {
-            IActionResult response = Unauthorized();
+            IActionResult response = Ok(new { token = "" });
 
             //If the data is Authenticated as Valid, make a token and return it
             if (UserAccountAuthenticator(userAccount.UserName, userAccount.Password).Result.Value == true)
@@ -47,6 +47,10 @@ namespace JWTAuthentication.Controllers
         {
             UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
 
+            if (data == null)
+            {
+                return false;
+            }
             return BCrypt.Net.BCrypt.Verify(password, data.Password);
         }
 
@@ -62,7 +66,7 @@ namespace JWTAuthentication.Controllers
             }
 
             //Check if UserName is taken
-            if (await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userAccount.UserName).FirstOrDefaultAsync<UserAccount>() == null)
+            if (await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userAccount.UserName).FirstOrDefaultAsync<UserAccount>() != null)
             {
                 return "Username is Taken";
             }
