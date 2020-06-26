@@ -32,22 +32,19 @@ namespace JWTAuthentication.Controllers
         [HttpGet("UserProfile")]
         public async Task<ActionResult<string>> UserProfileDetails(string token)
         {
-
-           
             var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
             //var identity = HttpContext.User.Identity as ClaimsIdentity;
             IList<Claim> claim = decodeToken.Claims.ToList();
             var userName = claim[0].Value;
             var password = claim[1].Value;
 
-            
-           //[FIX LATER! THERE IS PROBABLY A MORE EFFICIENT WAY OF DOING THIS THAN CALLING THE DATABASE TWICE!]
-           UserAccount userAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
-           UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == userAccount.Id).FirstOrDefaultAsync<UserData>();
-           UserAccData userAccData = new UserAccData(userAccount.UserName, userAccount.EmailAddress, userData);
+            //[FIX LATER! THERE IS PROBABLY A MORE EFFICIENT WAY OF DOING THIS THAN CALLING THE DATABASE TWICE!]
+            UserAccount userAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
+            UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == userAccount.Id).FirstOrDefaultAsync<UserData>();
+            UserAccData userAccData = new UserAccData(userAccount.UserName, userAccount.EmailAddress, userData.MemberSince, userData.HoursPlayed, userData.Subscription);
 
-           var jsonTest = JsonConvert.SerializeObject(userAccData);
-           return jsonTest;
+            var jsonTest = JsonConvert.SerializeObject(userAccData);
+            return jsonTest;
         }
 
         [Serializable]
@@ -55,14 +52,18 @@ namespace JWTAuthentication.Controllers
         {
             public string username;
             public string emailAddress;
-            public UserData userData;
+            public string memberSince;
+            public string hoursPlayed;
+            public string subscription;
 
-            public UserAccData(string _username, string _emailAddress, UserData _userData)
+            public UserAccData(string userName, string emailAddress, string memberSince, string hoursPlayed, string subscription)
             {
-                username = _username;
-                emailAddress = _emailAddress;
-                userData = _userData;
+                this.username = userName;
+                this.emailAddress = emailAddress;
+                this.memberSince = memberSince;
+                this.hoursPlayed = hoursPlayed;
+                this.subscription = subscription;
             }
-    }
         }
+    }
 }

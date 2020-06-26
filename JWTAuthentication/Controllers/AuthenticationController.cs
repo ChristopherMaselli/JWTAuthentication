@@ -32,10 +32,13 @@ namespace JWTAuthentication.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> PostUserAccountLogin(UserAccount userAccount)
         {
+            userAccount.UserName = userAccount.UserName.ToLower();
+            userAccount.EmailAddress = userAccount.EmailAddress.ToLower();
+
             IActionResult response = Ok(new { token = "" });
 
             //If the data is Authenticated as Valid, make a token and return it
-            if (UserAccountAuthenticator(userAccount.UserName, userAccount.Password).Result.Value == true)
+            if (UserAccountAuthenticatorUsername(userAccount.UserName, userAccount.Password).Result.Value == true || UserAccountAuthenticatorEmail(userAccount.EmailAddress, userAccount.Password).Result.Value == true)
             {
                 var tokenStr = GenerateJSONWebToken(userAccount);
                 response = Ok(new { token = tokenStr });
@@ -43,9 +46,20 @@ namespace JWTAuthentication.Controllers
             return response;
         }
 
-        private async Task<ActionResult<bool>> UserAccountAuthenticator(string userName, string password)
+        private async Task<ActionResult<bool>> UserAccountAuthenticatorUsername(string userName, string password)
         {
             UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
+
+            if (data == null)
+            {
+                return false;
+            }
+            return BCrypt.Net.BCrypt.Verify(password, data.Password);
+        }
+
+        private async Task<ActionResult<bool>> UserAccountAuthenticatorEmail(string emailAddress, string password)
+        {
+            UserAccount data = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.EmailAddress == emailAddress).FirstOrDefaultAsync<UserAccount>();
 
             if (data == null)
             {
@@ -57,6 +71,9 @@ namespace JWTAuthentication.Controllers
         [HttpPost("Registration")]
         public async Task<string> PostUserAccountRegistration(UserAccount userAccount)
         {
+            userAccount.UserName = userAccount.UserName.ToLower();
+            userAccount.EmailAddress = userAccount.EmailAddress.ToLower();
+
             HttpResponse response = HttpContext.Response;
 
             //Check is Email is taken
@@ -95,7 +112,7 @@ namespace JWTAuthentication.Controllers
             var userName = claim[0].Value;
             var password = claim[1].Value;
 
-            if (UserAccountAuthenticator(userName, password).Result.Value == true)
+            if (UserAccountAuthenticatorUsername(userName, password).Result.Value == true)
             {
                 return "true";
             }
