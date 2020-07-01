@@ -46,39 +46,43 @@ namespace JWTAuthentication.Controllers
             return jsonTest;
         }
 
-        [HttpGet("UserGames")]
-        public async Task<ActionResult<string>> UserGameDetails(string token)
+        [HttpPost("UserGames")]
+        public async Task<IActionResult> UserGameDetails(Token tokenVar)
         {
-            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(tokenVar.token);
             //var identity = HttpContext.User.Identity as ClaimsIdentity;
             IList<Claim> claim = decodeToken.Claims.ToList();
             var userName = claim[0].Value;
             UserAccount userAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
             
-            Game[] games = await _context.Games.Where<Game>(Game => Game.OwnerId == userAccount.Id).ToArrayAsync<Game>();
-  
-            PlayerToGame[] players = await _context.PlayerToGames.Where<PlayerToGame>(PlayerToGame => PlayerToGame.UserId == userAccount.Id).ToArrayAsync<PlayerToGame>();
+            Game[] games = await _context.Games.Where(e => e.OwnerId == userAccount.Id).ToArrayAsync();
 
-            List<UserData> playerList = new List<UserData>();
+            //player to game is just the list of player ID's, use that to get the user-datas, then put that list of userdatas into the game array
 
-            foreach (PlayerToGame ptg in players)
+            /*
+            foreach (Game ptg in games)
             {
-                UserData player = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == ptg.UserId).FirstOrDefaultAsync<UserData>();
-                playerList.Add(player);
+                PlayerToGame[] playedIds = await _context.PlayerToGames.Where<PlayerToGame>(PlayerToGame => PlayerToGame.UserId == ptg.OwnerId).ToArrayAsync<PlayerToGame>();
+                foreach (PlayerToGame pId in playedIds)
+                {
+                    //UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == pId.UserId).FirstOrDefaultAsync<UserData>();
+                    UserAccount playerAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.Id == pId.UserId).FirstOrDefaultAsync<UserAccount>();
+                    ptg.playerIDs.Add(playerAccount.Id);
+                }
             }
+            */
 
+            var jsonGameList = JsonConvert.SerializeObject(games);
+
+
+            IActionResult response = Ok(new { gameList = jsonGameList });
+            
+            return response;
             //use the username to get the id
             //use the id to get list of game id's
             //use the list of game id's to return a json list of the game details
             //Send back and de-serialize 
-            //Make a looping list of things in front-end. 
-
-            //[FIX LATER! THERE IS PROBABLY A MORE EFFICIENT WAY OF DOING THIS THAN CALLING THE DATABASE TWICE!]
-            UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == userAccount.Id).FirstOrDefaultAsync<UserData>();
-            UserAccData userAccData = new UserAccData(userAccount.UserName, userAccount.EmailAddress, userData.MemberSince, userData.HoursPlayed, userData.Subscription);
-
-            var jsonTest = JsonConvert.SerializeObject(userAccData);
-            return jsonTest;
+            //Make a looping list of things in front-end.
         }
 
         [Serializable]

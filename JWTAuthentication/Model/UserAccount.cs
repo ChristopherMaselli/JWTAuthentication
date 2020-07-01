@@ -31,7 +31,7 @@ namespace JWTAuthentication.Model
         [ForeignKey("UserId")]
         public UserAccount UserAccountId { get; set; }
 
-        //[ForeignKey("user_account_id")]
+        [ForeignKey("user_account_id")]
 
         public string MemberSince { get; set; }
 
@@ -45,18 +45,17 @@ namespace JWTAuthentication.Model
         [Key]
         public long GameId { get; set; }
 
-        public string ImageURL { get; set; }
+        public string ImagePath { get; set; }
 
-        public string GameName { get; set; }
+        public string Title { get; set; }
+        
         public long OwnerId { get; set; }
         [ForeignKey("OwnerId")]
         public UserAccount UserAccount { get; set; }
 
-        public List<UserData> players { get; set; }
+        public DateTime DateCreated { get; set; }
 
-        public int DateCreated { get; set; }
-
-        public int NextGameDateTime { get; set; }
+        public DateTime NextGameDateTime { get; set; }
     }
 
     public class PlayerToGame
