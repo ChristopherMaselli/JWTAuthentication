@@ -45,10 +45,14 @@ namespace JWTAuthentication.Model
         [Key]
         public long GameId { get; set; }
 
+        public string ImageURL { get; set; }
+
         public string GameName { get; set; }
         public long OwnerId { get; set; }
         [ForeignKey("OwnerId")]
         public UserAccount UserAccount { get; set; }
+
+        public List<UserData> players { get; set; }
 
         public int DateCreated { get; set; }
 
