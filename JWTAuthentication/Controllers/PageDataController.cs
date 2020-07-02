@@ -59,21 +59,24 @@ namespace JWTAuthentication.Controllers
 
             //player to game is just the list of player ID's, use that to get the user-datas, then put that list of userdatas into the game array
 
-            /*
-            foreach (Game ptg in games)
+            GamePackage[] gamePackageList = new GamePackage[games.Length];
+
+            for (int i = 0; i<games.Length; i++)
             {
-                PlayerToGame[] playedIds = await _context.PlayerToGames.Where<PlayerToGame>(PlayerToGame => PlayerToGame.UserId == ptg.OwnerId).ToArrayAsync<PlayerToGame>();
-                foreach (PlayerToGame pId in playedIds)
+                List<UserData> userDataList = new List<UserData>();
+                gamePackageList[i] = new GamePackage(games[i], userDataList);
+                //Get the player Id's
+                PlayerToGame[] playerIds = await _context.PlayerToGames.Where<PlayerToGame>(PlayerToGame => PlayerToGame.GameId == games[i].GameId).ToArrayAsync<PlayerToGame>();
+                for (int j = 0; j<playerIds.Length; j++)
                 {
-                    //UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == pId.UserId).FirstOrDefaultAsync<UserData>();
-                    UserAccount playerAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.Id == pId.UserId).FirstOrDefaultAsync<UserAccount>();
-                    ptg.playerIDs.Add(playerAccount.Id);
+                    //Get the userDatas from those ID's 
+                    UserData userData = await _context.UserDatas.Where<UserData>(UserData => UserData.UserId == playerIds[j].UserId).FirstOrDefaultAsync<UserData>();
+                    gamePackageList[i].playerList.Add(userData);
                 }
+                
             }
-            */
 
-            var jsonGameList = JsonConvert.SerializeObject(games);
-
+            var jsonGameList = JsonConvert.SerializeObject(gamePackageList);
 
             IActionResult response = Ok(new { gameList = jsonGameList });
             
@@ -103,5 +106,20 @@ namespace JWTAuthentication.Controllers
                 this.subscription = subscription;
             }
         }
+
+        public class GamePackage
+        {
+            public Game game;
+            public List<UserData> playerList;
+
+            public GamePackage(Game game, List<UserData> playerList)
+            {
+                this.game = game;
+                this.playerList = playerList;
+            }
+        }
+
+
+
     }
 }
