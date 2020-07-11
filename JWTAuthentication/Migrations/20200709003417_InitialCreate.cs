@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace JWTAuthentication.Migrations
 {
-    public partial class firstMigration : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,10 +40,11 @@ namespace JWTAuthentication.Migrations
                 {
                     GameId = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    GameName = table.Column<string>(nullable: true),
+                    ImagePath = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
                     OwnerId = table.Column<long>(nullable: false),
-                    DateCreated = table.Column<int>(nullable: false),
-                    NextGameDateTime = table.Column<int>(nullable: false)
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    NextGameDateTime = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,23 +58,25 @@ namespace JWTAuthentication.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProfilePageDatas",
+                name: "UserDatas",
                 columns: table => new
                 {
-                    UserDataId = table.Column<long>(nullable: false),
+                    UserId = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserAccountId = table.Column<long>(nullable: true),
                     MemberSince = table.Column<string>(nullable: true),
                     HoursPlayed = table.Column<string>(nullable: true),
                     Subscription = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProfilePageDatas", x => x.UserDataId);
+                    table.PrimaryKey("PK_UserDatas", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_UserProfilePageDatas_UserAccounts_UserDataId",
-                        column: x => x.UserDataId,
+                        name: "FK_UserDatas_UserAccounts_UserAccountId",
+                        column: x => x.UserAccountId,
                         principalTable: "UserAccounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,6 +119,11 @@ namespace JWTAuthentication.Migrations
                 name: "IX_PlayerToGames_UserId",
                 table: "PlayerToGames",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserDatas_UserAccountId",
+                table: "UserDatas",
+                column: "UserAccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -126,7 +135,7 @@ namespace JWTAuthentication.Migrations
                 name: "Tokens");
 
             migrationBuilder.DropTable(
-                name: "UserProfilePageDatas");
+                name: "UserDatas");
 
             migrationBuilder.DropTable(
                 name: "Games");

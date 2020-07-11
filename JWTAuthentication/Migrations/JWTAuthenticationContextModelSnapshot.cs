@@ -26,20 +26,23 @@ namespace JWTAuthentication.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("DateCreated")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("GameName")
+                    b.Property<string>("ImagePath")
                         .HasColumnType("text");
 
-                    b.Property<string>("ImageURL")
-                        .HasColumnType("text");
+                    b.Property<DateTime>("LastPlayed")
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("NextGameDateTime")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("NextGameDateTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
 
                     b.HasKey("GameId");
 
@@ -90,9 +93,6 @@ namespace JWTAuthentication.Migrations
                     b.Property<string>("EmailAddress")
                         .HasColumnType("text");
 
-                    b.Property<long?>("GameId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
@@ -101,15 +101,15 @@ namespace JWTAuthentication.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameId");
-
                     b.ToTable("UserAccounts");
                 });
 
             modelBuilder.Entity("JWTAuthentication.Model.UserData", b =>
                 {
                     b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("HoursPlayed")
                         .HasColumnType("text");
@@ -120,7 +120,12 @@ namespace JWTAuthentication.Migrations
                     b.Property<string>("Subscription")
                         .HasColumnType("text");
 
+                    b.Property<long?>("UserAccountId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("UserId");
+
+                    b.HasIndex("UserAccountId");
 
                     b.ToTable("UserDatas");
                 });
@@ -149,20 +154,11 @@ namespace JWTAuthentication.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("JWTAuthentication.Model.UserAccount", b =>
-                {
-                    b.HasOne("JWTAuthentication.Model.Game", null)
-                        .WithMany("playerIDs")
-                        .HasForeignKey("GameId");
-                });
-
             modelBuilder.Entity("JWTAuthentication.Model.UserData", b =>
                 {
-                    b.HasOne("JWTAuthentication.Model.UserAccount", "UserAccountId")
+                    b.HasOne("JWTAuthentication.Model.UserAccount", "UserAccount")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserAccountId");
                 });
 #pragma warning restore 612, 618
         }

@@ -23,15 +23,14 @@ namespace JWTAuthentication.Model
         public string token { get; set; }
     }
 
-    [Serializable]
     public class UserData
     {
         [Key]
-        public long UserId { get; set; }
         [ForeignKey("UserId")]
-        public UserAccount UserAccountId { get; set; }
+        public long UserId { get; set; }
 
-        [ForeignKey("user_account_id")]
+        [ForeignKey("UserAccountId")]
+        public UserAccount UserAccount { get; set; }
 
         public string MemberSince { get; set; }
 
@@ -54,6 +53,8 @@ namespace JWTAuthentication.Model
         public UserAccount UserAccount { get; set; }
 
         public DateTime DateCreated { get; set; }
+
+        public DateTime LastPlayed { get; set; }
 
         public DateTime NextGameDateTime { get; set; }
     }
