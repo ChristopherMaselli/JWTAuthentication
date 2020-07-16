@@ -22,6 +22,23 @@ namespace JWTAuthentication.Model
 
         public DbSet<PlayerToGame> PlayerToGames { get; set; }
 
+        /*
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserAccount>()
+                        .HasRequired(m => m.HomeTeam)
+                        .WithMany(t => t.HomeMatches)
+                        .HasForeignKey(m => m.HomeTeamId)
+                        .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserData>()
+                        .HasRequired(m => m.GuestTeam)
+                        .WithMany(t => t.AwayMatches)
+                        .HasForeignKey(m => m.GuestTeamId)
+                        .WillCascadeOnDelete(false);
+        }
+        */
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql("Host=127.0.0.1;Database=GP2_DB;Username=postgres;Password=Squeakzilla1;");

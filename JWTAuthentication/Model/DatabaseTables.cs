@@ -11,10 +11,11 @@ namespace JWTAuthentication.Model
     {
         [Key]
         public long Id { get; set; }
+
         public string UserName { get; set; }
 
         public string Password { get; set; }
-
+        
         public string EmailAddress { get; set; }
     }
     public class Token
@@ -26,11 +27,11 @@ namespace JWTAuthentication.Model
     public class UserData
     {
         [Key]
-        [ForeignKey("UserId")]
         public long UserId { get; set; }
-
-        [ForeignKey("UserAccountId")]
+        [ForeignKey("UserId")]
         public UserAccount UserAccount { get; set; }
+
+        public string ImagePath { get; set; }
 
         public string MemberSince { get; set; }
 
