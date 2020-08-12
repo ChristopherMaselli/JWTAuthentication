@@ -21,75 +21,145 @@ namespace JWTAuthentication.Controllers
     [ApiController]
     public class StripeController : Controller
     {
-        [HttpPost("PurchaseItem")]
-        public ActionResult PurchaseItem(PaymentIntentCreateRequest request)
-        {
-            var customers = new CustomerService();
-            var customer = customers.Create(new CustomerCreateOptions());
-            var paymentIntents = new PaymentIntentService();
-            var paymentIntent = paymentIntents.Create(new PaymentIntentCreateOptions
-            {
-                Customer = customer.Id,
-                SetupFutureUsage = "off_session",
-                Amount = CalculateOrderAmount(request.Items),
-                Currency = "usd",
-            });
+        private IConfiguration _config;
 
-            return Json(new { clientSecret = paymentIntent.ClientSecret });
+        private readonly JWTAuthenticationContext _context;
+
+        public StripeController(IConfiguration config, JWTAuthenticationContext context)
+        {
+            _config = config;
+            _context = context;
+        }
+
+        [HttpPost("PurchaseItem")]
+        public async Task<ActionResult> PurchaseItem(string token, Item[] items)
+        {
+            //Get the customer id
+            var customerId = await GetCustomer(token);
+
+            //Get the total cost of all of the items
+            var amount = await CalculateOrderAmount(items);
+
+            //Get list of customer's payment methods (cards)
+            var pmlOptions = new PaymentMethodListOptions
+            {
+                Customer = customerId,
+                Type = "card",
+            };
+
+            var pmService = new PaymentMethodService();
+            var paymentMethods = pmService.List(pmlOptions);
+
+            //Charge the payment method with the amount of the product
+            try
+            {
+                var service = new PaymentIntentService();
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = amount, //1099 = 10.99
+                    Currency = "usd",
+                    Customer = customerId,
+                    PaymentMethod = paymentMethods.Data[0].Id,
+                    Confirm = true,
+                    OffSession = true,
+                };
+                service.Create(options);
+                ActionResult response = Ok(new { message = "Order Proccessed!" });
+                return response;
+            }
+            catch (StripeException e) //Send these back to user in message later
+            {
+                switch (e.StripeError.Type)
+                {
+                    case "card_error":
+                        // Error code will be authentication_required if authentication is needed
+                        Console.WriteLine("Error code: " + e.StripeError.Code);
+                        var paymentIntentId = e.StripeError.PaymentIntent.Id;
+                        var service = new PaymentIntentService();
+                        var paymentIntent = service.Get(paymentIntentId);
+
+                        Console.WriteLine(paymentIntent.Id);
+                        break;
+                    default:
+                        break;
+                }
+                ActionResult response = Ok(new { message = "Error code: " + e.StripeError.Code});
+                return response;
+            }      
         }
 
         [HttpPost("PurchaseSubscription")]
-        public ActionResult PurchaseSubscription(PaymentIntentCreateRequest request)
+        public async Task<IActionResult> PurchaseSubscription(string token, string productCode)
         {
-            var customers = new CustomerService();
-            var customer = customers.Create(new CustomerCreateOptions());
+            var customerId = await GetCustomer(token);
             var options = new SubscriptionCreateOptions
             {
-                Customer = customer.Id,
+                Customer = customerId,
                 Items = new List<SubscriptionItemOptions>
                 {
                     new SubscriptionItemOptions
                     {
-                       Price = "price_1HDWISHb4Zd1savwuVLDE8zN",
+                       Price = productCode,
                     },
                 },
             };
             var service = new SubscriptionService();
             Subscription subscription = service.Create(options);
 
-            return Json(new { clientSecret = options.ClientSecret });
+            IActionResult response = Ok(new { message = "Order Proccessed!" });
+            return response;
         }
 
-        private int CalculateOrderAmount(Item[] items)
+        [HttpPost("RegisterCard")]
+        public async Task<ActionResult> RegisterCard(string token, string productCode)
         {
-            // Replace this constant with a calculation of the order's amount
-            // Calculate the order total on the server to prevent
-            // people from directly manipulating the amount on the client
-            return 1400;
+            var customerId = await GetCustomer(token);
+
+            var options = new SetupIntentCreateOptions
+            {
+                Customer = customerId,
+            };
+            var service = new SetupIntentService();
+            var intent = service.Create(options);
+            ViewData["ClientSecret"] = intent.ClientSecret;
+            return View();
+
+            ActionResult response = Ok(new { message = "Card Saved!" });
+            return response;
         }
 
-        public void ChargeCustomer(string customerId)
+        public async Task<string> GetCustomer(string token)
         {
-            // Lookup the payment methods available for the customer
-            var paymentMethods = new PaymentMethodService();
-            var availableMethods = paymentMethods.List(new PaymentMethodListOptions
+            var decodeToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            IList<Claim> claim = decodeToken.Claims.ToList();
+            var userName = claim[0].Value;
+            var password = claim[1].Value;
+
+            UserAccount userAccount = await _context.UserAccounts.Where<UserAccount>(UserAccount => UserAccount.UserName == userName).FirstOrDefaultAsync<UserAccount>();
+            StripeCustomer customerObj = await _context.StripeCustomers.Where<StripeCustomer>(StripeCustomer => StripeCustomer.UserId == userAccount.Id).FirstOrDefaultAsync<StripeCustomer>();
+
+            var customerId = customerObj.CustomerCode;
+
+            if (customerId == null)
             {
-                Customer = customerId,
-                Type = "card",
-            });
-            // Charge the customer and payment method immediately
-            var paymentIntents = new PaymentIntentService();
-            var paymentIntent = paymentIntents.Create(new PaymentIntentCreateOptions
+                var customers = new CustomerService();
+                var customer = customers.Create(new CustomerCreateOptions());
+                customerId = customer.Id;
+            };
+            return customerId;
+        }
+
+        private async Task<int> CalculateOrderAmount(Item[] items)
+        {
+            //This function will be used for ordering store items rather than subscriptions
+            var priceTotal = 0;
+            PurchaseItem purchaseItem = new PurchaseItem();
+            foreach (Item i in items)
             {
-                Amount = 1099,
-                Currency = "usd",
-                Customer = customerId,
-                PaymentMethod = availableMethods.Data[0].Id,
-                OffSession = true,
-                Confirm = true
-            });
-            if (paymentIntent.Status == "succeeded")
-                Console.WriteLine("✅ Successfully charged card off session");
+                purchaseItem = await _context.PurchaseItems.Where<PurchaseItem>(PurchaseItem => PurchaseItem.ItemId == i.Id).FirstOrDefaultAsync<PurchaseItem>();
+                priceTotal += purchaseItem.ItemAmount;
+            }
+            return priceTotal;
         }
 
         public class Item
@@ -103,63 +173,4 @@ namespace JWTAuthentication.Controllers
             public Item[] Items { get; set; }
         }
     }
-
-        /*
-        [HttpPost]
-        public IActionResult ChargeChange()
-        {
-            var json = new StreamReader(HttpContext.Request.Body).ReadToEnd();
-
-            try
-            {
-                var stripeEvent = EventUtility.ConstructEvent(json,
-                    Request.Headers["Stripe-Signature"], WebhookSecret, throwOnApiVersionMismatch: true);
-                Charge charge = (Charge)stripeEvent.Data.Object;
-                switch (charge.Status)
-                {
-                    case "succeeded":
-                        //This is an example of what to do after a charge is successful
-                        charge.Metadata.TryGetValue("Product", out string Product);
-                        charge.Metadata.TryGetValue("Quantity", out string Quantity);
-                        Database.ReduceStock(Product, Quantity);
-                        break;
-                    case "failed":
-                        //Code to execute on a failed charge
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                e.Ship(HttpContext);
-                return BadRequest();
-            }
-            return Ok();
-        }
-        */
-        /*
-        public class StripeCharge
-        {
-            public string cardNumber { get; set; }
-
-            public int cardExpYear { get; set; }
-
-            public int cardExpMonth { get; set; }
-
-            public string cardCvc { get; set; }
-
-            public string stripeEmail { get; set; }
-
-            public int amount { get; set; }
-
-            public string product { get; set; }
-
-            public string quantity { get; set; }
-
-            public string currency { get; set; }
-
-            public string source { get; set; }
-
-            public string description { get; set; }
-        }
-    } */
 }

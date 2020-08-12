@@ -3,15 +3,17 @@ using System;
 using JWTAuthentication.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace JWTAuthentication.Migrations
 {
     [DbContext(typeof(JWTAuthenticationContext))]
-    partial class JWTAuthenticationContextModelSnapshot : ModelSnapshot
+    [Migration("20200812024215_AddCustomersTable")]
+    partial class AddCustomersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,43 +73,6 @@ namespace JWTAuthentication.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PlayerToGames");
-                });
-
-            modelBuilder.Entity("JWTAuthentication.Model.PurchaseItem", b =>
-                {
-                    b.Property<long>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("ItemAmount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ItemDescription")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ItemId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ItemName")
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
-
-                    b.ToTable("PurchaseItems");
-                });
-
-            modelBuilder.Entity("JWTAuthentication.Model.StripeCustomer", b =>
-                {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CustomerCode")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("StripeCustomers");
                 });
 
             modelBuilder.Entity("JWTAuthentication.Model.Token", b =>
@@ -180,15 +145,6 @@ namespace JWTAuthentication.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("JWTAuthentication.Model.UserAccount", "UserAccount")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("JWTAuthentication.Model.StripeCustomer", b =>
-                {
                     b.HasOne("JWTAuthentication.Model.UserAccount", "UserAccount")
                         .WithMany()
                         .HasForeignKey("UserId")

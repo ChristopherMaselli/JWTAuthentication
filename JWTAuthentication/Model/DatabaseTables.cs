@@ -73,4 +73,28 @@ namespace JWTAuthentication.Model
         [ForeignKey("UserId")]
         public UserAccount UserAccount { get; set; }
     }
+
+    public class PurchaseItem
+    {
+        [Key]
+        public long id { get; set; }
+
+        public string ItemId { get; set; }
+
+        public string ItemName { get; set; }
+
+        public int ItemAmount { get; set; }
+
+        public string ItemDescription { get; set; }
+    }
+
+    public class StripeCustomer
+    {
+        [Key]
+        public long UserId { get; set; }
+        [ForeignKey("UserId")]
+        public UserAccount UserAccount { get; set; }
+
+        public string CustomerCode { get; set; }
+    }
 }

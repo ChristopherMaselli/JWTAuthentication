@@ -22,6 +22,10 @@ namespace JWTAuthentication.Model
 
         public DbSet<PlayerToGame> PlayerToGames { get; set; }
 
+        public DbSet<PurchaseItem> PurchaseItems { get; set; }
+
+        public DbSet<StripeCustomer> StripeCustomers { get; set; }
+
         /*
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
