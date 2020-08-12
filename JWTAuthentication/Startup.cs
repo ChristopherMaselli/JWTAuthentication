@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 using JWTAuthentication.Model;
 using Newtonsoft;
 
@@ -80,12 +81,13 @@ namespace JWTAuthentication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // This is a sample test API key. Sign in to see examples pre-filled with your key.
+            StripeConfiguration.ApiKey = "sk_test_51H6FiIHb4Zd1savw3BRKF2B2Pnt6zDnkEorcCXL6hzgjOM2yH9mhMY0EXjqZHClhM8lt7I1k06FEwd9RPNBuyRHe00GRbagCoV";
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            
 
             app.UseHttpsRedirection();
 
@@ -94,10 +96,8 @@ namespace JWTAuthentication
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthentication();
+
             app.UseAuthorization();
-
-
-            
 
             app.UseEndpoints(endpoints =>
             {

@@ -15,7 +15,7 @@ namespace JWTAuthentication.Model
         public string UserName { get; set; }
 
         public string Password { get; set; }
-        
+
         public string EmailAddress { get; set; }
     }
     public class Token
@@ -48,7 +48,7 @@ namespace JWTAuthentication.Model
         public string ImagePath { get; set; }
 
         public string Title { get; set; }
-        
+
         public long OwnerId { get; set; }
         [ForeignKey("OwnerId")]
         public UserAccount UserAccount { get; set; }
