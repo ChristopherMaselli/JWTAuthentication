@@ -54,6 +54,9 @@ namespace JWTAuthentication
             );
             */
 
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.AddTransient<IMailService, Services.MailService>();
+
             services.AddDbContext<JWTAuthenticationContext>(opt =>
                opt.UseNpgsql(Configuration.GetConnectionString("PostgresDBConnection")));
 
