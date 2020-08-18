@@ -60,8 +60,10 @@ namespace JWTAuthentication
                opt.UseNpgsql(Configuration.GetConnectionString("PostgresDBConnection")));
 
             services.AddControllers();
-                //.AddNewtonsoftJson(json => json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            //.AddNewtonsoftJson(json => json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+            // configure strongly typed settings object
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -78,10 +80,6 @@ namespace JWTAuthentication
                     };
                 });
             services.AddMvc();
-
-
-            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
-            services.AddTransient<IMailService, Services.MailService>();
 
         }
 
