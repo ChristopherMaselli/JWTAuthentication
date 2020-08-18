@@ -75,16 +75,22 @@ namespace JWTAuthentication.Model
         public UserAccount UserAccount { get; set; }
     }
 
-    public class PurchaseItem
+    public class PurchaseItem //Make owner and name into a composite key sometime?
     {
         [Key]
         public long id { get; set; }
 
-        public string ItemId { get; set; }
+        public string ItemCode { get; set; }
+
+        public long ItemOwnerId { get; set; }
+        [ForeignKey("ItemOwnerId")]
+        public UserAccount UserAccount { get; set; }
+
+        public string PriceId { get; set; }
 
         public string ItemName { get; set; }
 
-        public int ItemAmount { get; set; }
+        public int ItemCost { get; set; }
 
         public string ItemDescription { get; set; }
     }
@@ -106,14 +112,4 @@ namespace JWTAuthentication.Model
         public string Body { get; set; }
         public List<IFormFile> Attachments { get; set; }
     }
-
-    public class MailSettings
-    {
-        public string Mail { get; set; }
-        public string DisplayName { get; set; }
-        public string Password { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
-    }
-
 }

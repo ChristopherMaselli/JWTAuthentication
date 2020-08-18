@@ -1,4 +1,5 @@
 ﻿using JWTAuthentication.Model;
+using JWTAuthentication.Settings;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -47,8 +48,8 @@ namespace JWTAuthentication.Services
             smtp.Host = _mailSettings.Host;
             smtp.EnableSsl = true;
             smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(_mailSettings.Mail, _mailSettings.Password);
             smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtp.Credentials = new NetworkCredential(_mailSettings.Mail, _mailSettings.Password);
             await smtp.SendMailAsync(message);
         }
     }

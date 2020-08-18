@@ -24,8 +24,9 @@ namespace JWTAuthentication.Controllers
             this.mailService = mailService;
         }
         [HttpPost("Send")]
-        public async Task<IActionResult> SendMail([FromForm]MailRequest request)
+        public async Task<IActionResult> SendMail(MailRequest request)
         {
+            request.Attachments = null;
             try
             {
                 await mailService.SendEmailAsync(request);

@@ -2,7 +2,6 @@ C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\appsettings.json
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\Properties\launchSettings.json
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\JWTAuthentication.exe
-C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\JWTAuthentication.csprojAssemblyReference.cache
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\staticwebassets\JWTAuthentication.StaticWebAssets.Manifest.cache
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\staticwebassets\JWTAuthentication.StaticWebAssets.xml
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\JWTAuthentication.AssemblyInfoInputs.cache
@@ -152,3 +151,4 @@ C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\BCrypt.Net.dll
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\JWTAuthentication.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\Stripe.net.dll
+C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\JWTAuthentication.csprojAssemblyReference.cache

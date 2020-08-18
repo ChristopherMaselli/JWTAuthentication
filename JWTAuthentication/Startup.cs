@@ -17,6 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using Stripe;
 using JWTAuthentication.Model;
 using Newtonsoft;
+using JWTAuthentication.Services;
+using JWTAuthentication.Settings;
 
 namespace JWTAuthentication
 {
@@ -54,9 +56,6 @@ namespace JWTAuthentication
             );
             */
 
-            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
-            services.AddTransient<IMailService, Services.MailService>();
-
             services.AddDbContext<JWTAuthenticationContext>(opt =>
                opt.UseNpgsql(Configuration.GetConnectionString("PostgresDBConnection")));
 
@@ -79,6 +78,11 @@ namespace JWTAuthentication
                     };
                 });
             services.AddMvc();
+
+
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.AddTransient<IMailService, Services.MailService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

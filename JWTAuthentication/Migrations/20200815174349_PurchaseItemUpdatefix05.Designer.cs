@@ -3,15 +3,17 @@ using System;
 using JWTAuthentication.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace JWTAuthentication.Migrations
 {
     [DbContext(typeof(JWTAuthenticationContext))]
-    partial class JWTAuthenticationContextModelSnapshot : ModelSnapshot
+    [Migration("20200815174349_PurchaseItemUpdatefix05")]
+    partial class PurchaseItemUpdatefix05
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,15 +75,12 @@ namespace JWTAuthentication.Migrations
                     b.ToTable("PlayerToGames");
                 });
 
-            modelBuilder.Entity("JWTAuthentication.Model.PurchaseItem", b =>
+            modelBuilder.Entity("JWTAuthentication.Model.SomethingDifferent", b =>
                 {
                     b.Property<long>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("ItemCode")
-                        .HasColumnType("text");
 
                     b.Property<int>("ItemCost")
                         .HasColumnType("integer");
@@ -92,17 +91,15 @@ namespace JWTAuthentication.Migrations
                     b.Property<string>("ItemName")
                         .HasColumnType("text");
 
-                    b.Property<long>("ItemOwnerId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("ItemOwner")
+                        .HasColumnType("text");
 
                     b.Property<string>("PriceId")
                         .HasColumnType("text");
 
                     b.HasKey("id");
 
-                    b.HasIndex("ItemOwnerId");
-
-                    b.ToTable("PurchaseItems");
+                    b.ToTable("SomethingDifferents");
                 });
 
             modelBuilder.Entity("JWTAuthentication.Model.StripeCustomer", b =>
@@ -191,15 +188,6 @@ namespace JWTAuthentication.Migrations
                     b.HasOne("JWTAuthentication.Model.UserAccount", "UserAccount")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("JWTAuthentication.Model.PurchaseItem", b =>
-                {
-                    b.HasOne("JWTAuthentication.Model.UserAccount", "UserAccount")
-                        .WithMany()
-                        .HasForeignKey("ItemOwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
