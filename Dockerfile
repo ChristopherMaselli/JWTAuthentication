@@ -1,17 +1,16 @@
-FROM node:13.5.0
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+WORKDIR /app
 
-# Setting working directory. All the path will be relative to WORKDIR
-WORKDIR /usr/src/app
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
 
-# Installing dependencies
-COPY package*.json ./
-RUN npm ci
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-# Copying source files
-COPY . .
-
-# Building app
-RUN npm run build
-
-# Running the app
-CMD [ "npm", "start" ]
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "aspnetapp.dll"]
