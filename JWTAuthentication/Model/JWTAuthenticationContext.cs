@@ -45,6 +45,6 @@ namespace JWTAuthentication.Model
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Host=127.0.0.1;Database=GP2_DB;Username=postgres;Password=Squeakzilla1;");
+            => optionsBuilder.UseNpgsql("Host=db-postgresql-nyc1-82398-do-user-7936759-0.a.db.ondigitalocean.com;Port=25060;Database=defaultdb;Username=doadmin;Password=udmrmy1h75xoansx;SSLMode=Require;TrustServerCertificate=True;");
     }
 }

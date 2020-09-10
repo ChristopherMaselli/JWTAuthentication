@@ -155,3 +155,6 @@ C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\MimeKit.dll
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\BouncyCastle.Crypto.dll
 C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\obj\Debug\netcoreapp3.1\JWTAuthentication.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\System.Collections.Immutable.dll
+C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\System.Diagnostics.DiagnosticSource.dll
+C:\Users\Christopher\source\repos\JWTAuthentication\JWTAuthentication\bin\Debug\netcoreapp3.1\System.Text.Json.dll

@@ -57,7 +57,7 @@ namespace JWTAuthentication
             */
 
             services.AddDbContext<JWTAuthenticationContext>(opt =>
-               opt.UseNpgsql(Configuration.GetConnectionString("PostgresDBConnection")));
+               opt.UseNpgsql(Configuration.GetConnectionString("postgresql")));
 
             services.AddControllers();
             //.AddNewtonsoftJson(json => json.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
