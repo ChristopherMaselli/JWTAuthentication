@@ -19,6 +19,7 @@ using JWTAuthentication.Model;
 using Newtonsoft;
 using JWTAuthentication.Services;
 using JWTAuthentication.Settings;
+using Microsoft.AspNetCore.Http;
 
 namespace JWTAuthentication
 {
@@ -64,6 +65,12 @@ namespace JWTAuthentication
 
             // configure strongly typed settings object
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                options.HttpsPort = 80;
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
